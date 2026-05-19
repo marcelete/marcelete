@@ -251,13 +251,262 @@
       50%       { transform: rotate(45deg) translateY(4px); }
     }
 
-    /* ─── Placeholder for future sections ──────────────────────────────── */
-    .coming-soon {
-      text-align: center;
-      padding: 6rem 1rem;
-      color: var(--text-muted);
+    /* ─── Section shared ────────────────────────────────────────────────── */
+    .section-label {
       font-family: var(--font-mono);
-      font-size: 0.8rem;
+      font-size: 0.72rem;
+      color: var(--blue);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-title {
+      font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+
+    /* ─── Projects Section ───────────────────────────────────────────────── */
+    #projects {
+      padding: 7rem 1rem 6rem;
+      position: relative;
+    }
+
+    #projects::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+    }
+
+    /* ── Carousel viewport ── */
+    .carousel-viewport {
+      perspective: 1100px;
+      width: 100%;
+      height: 370px;
+      position: relative;
+      cursor: grab;
+      user-select: none;
+    }
+    .carousel-viewport:active { cursor: grabbing; }
+
+    #carousel-stage {
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      position: absolute;
+      top: 0; left: 0;
+      transition: transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    /* ── Each card ── */
+    .proj-card {
+      position: absolute;
+      width: 240px;
+      height: 330px;
+      left: 50%;
+      top: 50%;
+      margin-left: -120px;
+      margin-top: -165px;
+      cursor: pointer;
+      transition: opacity 0.4s;
+      opacity: 0.38;
+    }
+
+    .proj-card.active { opacity: 1; }
+
+    .card-inner {
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.5s ease;
+      border-radius: 14px;
+    }
+
+    .card-inner.flipped { transform: rotateY(180deg); }
+
+    .card-front,
+    .card-back {
+      position: absolute;
+      inset: 0;
+      border-radius: 14px;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      padding: 1.75rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Front face */
+    .card-front {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 0.85rem;
+    }
+
+    .proj-card.active .card-front {
+      border-color: rgba(0,180,255,0.35);
+      box-shadow:
+        0 0 0 1px rgba(0,180,255,0.08),
+        0 16px 48px rgba(0,0,0,0.6),
+        0 0 40px rgba(0,180,255,0.08);
+    }
+
+    .card-icon { font-size: 2.4rem; line-height: 1; }
+
+    .card-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .card-tagline {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+
+    .card-hint {
+      font-family: var(--font-mono);
+      font-size: 0.64rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      letter-spacing: 0.04em;
+    }
+
+    /* Back face */
+    .card-back {
+      background: linear-gradient(145deg, #0d1a2e, #08101e);
+      border: 1px solid rgba(0,180,255,0.28);
+      transform: rotateY(180deg);
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .card-back-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--blue);
+      line-height: 1.3;
+    }
+
+    .card-back-desc {
+      font-size: 0.76rem;
+      color: var(--text-dim);
+      line-height: 1.65;
+      flex: 1;
+    }
+
+    .card-stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 0.5rem;
+    }
+
+    .stack-badge {
+      background: rgba(0,180,255,0.09);
+      border: 1px solid rgba(0,180,255,0.2);
+      color: var(--blue);
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+
+    .card-link {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--green);
+      text-decoration: none;
+      border: 1px solid rgba(0,255,136,0.3);
+      padding: 4px 10px;
+      border-radius: 4px;
+      margin-top: 0.6rem;
+      transition: background 0.2s;
+      align-self: flex-start;
+    }
+    .card-link:hover { background: rgba(0,255,136,0.1); }
+
+    .card-confidential {
+      font-family: var(--font-mono);
+      font-size: 0.63rem;
+      color: var(--text-muted);
+      font-style: italic;
+      margin-top: 0.4rem;
+    }
+
+    /* ── Controls ── */
+    .carousel-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.2rem;
+      margin-top: 2rem;
+    }
+
+    .carousel-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+      flex-shrink: 0;
+    }
+    .carousel-btn:hover {
+      border-color: var(--blue);
+      color: var(--blue);
+      background: rgba(0,180,255,0.05);
+    }
+
+    .carousel-dots {
+      display: flex;
+      gap: 7px;
+      align-items: center;
+    }
+
+    .carousel-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      cursor: pointer;
+      transition: background 0.25s, transform 0.25s;
+      border: none;
+      padding: 0;
+    }
+    .carousel-dot.active {
+      background: var(--blue);
+      transform: scale(1.5);
+    }
+
+    .carousel-hint {
+      text-align: center;
+      margin-top: 0.9rem;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--text-muted);
     }
 
     /* ─── Responsive ────────────────────────────────────────────────────── */
@@ -268,6 +517,9 @@
       }
       .t-output.name { font-size: 0.95rem; }
       .terminal-title { display: none; }
+
+      .carousel-viewport { height: 320px; }
+      .proj-card { width: 210px; height: 290px; margin-left: -105px; margin-top: -145px; }
     }
   </style>
 </head>
@@ -298,10 +550,191 @@
     </div>
   </section>
 
-  <!-- future sections mount here -->
-  <div class="coming-soon" id="sections-placeholder">
-    <!-- próximas secciones -->
-  </div>
+  <!-- ══════════════════════════════════════════════ PROJECTS ══ -->
+  <section id="projects">
+    <div class="section-header">
+      <p class="section-label">// proyectos</p>
+      <h2 class="section-title">Trabajo destacado</h2>
+    </div>
+
+    <div class="carousel-viewport" id="carousel-viewport">
+      <div id="carousel-stage">
+
+        <!-- Card 1: Cuentas Claras -->
+        <div class="proj-card">
+          <div class="card-inner">
+            <div class="card-front">
+              <div class="card-icon">💰</div>
+              <div class="card-name">Cuentas Claras</div>
+              <div class="card-tagline">App multiplataforma de gestión financiera personal</div>
+              <div class="card-hint">[ tap para ver detalles ]</div>
+            </div>
+            <div class="card-back">
+              <div class="card-back-title">Cuentas Claras</div>
+              <div class="card-back-desc">Proyecto en desarrollo activo. App multiplataforma para gestión de cuentas personales, construida con Claude Code usando ramas dedicadas y archivos CLAUDE.md como contexto para el agente.</div>
+              <div class="card-stack">
+                <span class="stack-badge">Flutter</span>
+                <span class="stack-badge">Firebase</span>
+                <span class="stack-badge">Firestore</span>
+                <span class="stack-badge">Claude Code</span>
+                <span class="stack-badge">Git</span>
+              </div>
+              <a class="card-link" href="https://github.com/marcelete" target="_blank" rel="noopener">→ Ver en GitHub</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: SIFCOP -->
+        <div class="proj-card">
+          <div class="card-inner">
+            <div class="card-front">
+              <div class="card-icon">⚙️</div>
+              <div class="card-name">Automatización SIFCOP</div>
+              <div class="card-tagline">Gestión automatizada de usuarios para organismo gubernamental</div>
+              <div class="card-hint">[ tap para ver detalles ]</div>
+            </div>
+            <div class="card-back">
+              <div class="card-back-title">Automatización SIFCOP</div>
+              <div class="card-back-desc">Automatización de procesos de gestión de usuarios (altas, bajas y suspensiones) para organismo gubernamental, reemplazando flujos manuales con scripts robustos.</div>
+              <div class="card-stack">
+                <span class="stack-badge">Python</span>
+                <span class="stack-badge">Selenium</span>
+                <span class="stack-badge">Excel</span>
+                <span class="stack-badge">VBA</span>
+              </div>
+              <div class="card-confidential">⚠ Proyecto institucional — detalles confidenciales</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3: E-commerce Ambos Médicos -->
+        <div class="proj-card">
+          <div class="card-inner">
+            <div class="card-front">
+              <div class="card-icon">🛒</div>
+              <div class="card-name">Ambos Médicos</div>
+              <div class="card-tagline">E-commerce para profesionales de la salud en CABA</div>
+              <div class="card-hint">[ tap para ver detalles ]</div>
+            </div>
+            <div class="card-back">
+              <div class="card-back-title">Ambos Médicos</div>
+              <div class="card-back-desc">Tienda online dropshipping para profesionales de la salud. Análisis estratégico asistido por IA: pricing, segmentación, plan de adquisición vía Mercado Libre e influencers.</div>
+              <div class="card-stack">
+                <span class="stack-badge">Next.js</span>
+                <span class="stack-badge">Supabase</span>
+                <span class="stack-badge">Vercel</span>
+                <span class="stack-badge">Mercado Pago</span>
+                <span class="stack-badge">GA4</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 4: OWA Mail Counter -->
+        <div class="proj-card">
+          <div class="card-inner">
+            <div class="card-front">
+              <div class="card-icon">✉️</div>
+              <div class="card-name">OWA Mail Counter</div>
+              <div class="card-tagline">Conteo automatizado de emails en Outlook Web App</div>
+              <div class="card-hint">[ tap para ver detalles ]</div>
+            </div>
+            <div class="card-back">
+              <div class="card-back-title">OWA Mail Counter</div>
+              <div class="card-back-desc">Herramienta funcional que reemplaza una tarea manual recurrente de oficina: conteo automatizado de emails en OWA. Solución pequeña, impacto real.</div>
+              <div class="card-stack">
+                <span class="stack-badge">JavaScript</span>
+                <span class="stack-badge">OWA API</span>
+              </div>
+              <a class="card-link" href="https://github.com/marcelete" target="_blank" rel="noopener">→ Ver en GitHub</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 5: Sistema de Reservas -->
+        <div class="proj-card">
+          <div class="card-inner">
+            <div class="card-front">
+              <div class="card-icon">📅</div>
+              <div class="card-name">Sistema de Reservas</div>
+              <div class="card-tagline">Booking online con cancelación serverless</div>
+              <div class="card-hint">[ tap para ver detalles ]</div>
+            </div>
+            <div class="card-back">
+              <div class="card-back-title">Sistema de Reservas</div>
+              <div class="card-back-desc">Frontend en GitHub Pages + backend en Supabase Edge Functions (cancel-booking). Diseñado para operar en entornos sin Node.js local instalado.</div>
+              <div class="card-stack">
+                <span class="stack-badge">HTML/CSS/JS</span>
+                <span class="stack-badge">Supabase</span>
+                <span class="stack-badge">Edge Functions</span>
+                <span class="stack-badge">GitHub Pages</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 6: Guía Telefónica -->
+        <div class="proj-card">
+          <div class="card-inner">
+            <div class="card-front">
+              <div class="card-icon">📞</div>
+              <div class="card-name">Guía Telefónica</div>
+              <div class="card-tagline">Dashboard consultable desde fuentes públicas</div>
+              <div class="card-hint">[ tap para ver detalles ]</div>
+            </div>
+            <div class="card-back">
+              <div class="card-back-title">Guía Telefónica Automatizada</div>
+              <div class="card-back-desc">Web scraping de fuentes públicas del Ministerio de Seguridad + dashboard interactivo consultable desde Looker Studio. Sustituyó búsqueda manual.</div>
+              <div class="card-stack">
+                <span class="stack-badge">Python</span>
+                <span class="stack-badge">Selenium</span>
+                <span class="stack-badge">Looker Studio</span>
+              </div>
+              <div class="card-confidential">⚠ Proyecto institucional</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 7: Normalización DB -->
+        <div class="proj-card">
+          <div class="card-inner">
+            <div class="card-front">
+              <div class="card-icon">🗄️</div>
+              <div class="card-name">Normalización DB</div>
+              <div class="card-tagline">+2M registros · 10 años de datos históricos</div>
+              <div class="card-hint">[ tap para ver detalles ]</div>
+            </div>
+            <div class="card-back">
+              <div class="card-back-title">Normalización DB +2M</div>
+              <div class="card-back-desc">Limpieza y categorización de más de 2 millones de registros (10 años) con detección de patrones por palabras clave. Hardware limitado (i7 2600, 4GB RAM) bajo normativas de protección de datos.</div>
+              <div class="card-stack">
+                <span class="stack-badge">Python</span>
+                <span class="stack-badge">pandas</span>
+                <span class="stack-badge">ETL</span>
+                <span class="stack-badge">Excel</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /carousel-stage -->
+    </div><!-- /carousel-viewport -->
+
+    <div class="carousel-controls">
+      <button class="carousel-btn" id="prev-btn" aria-label="Anterior">&#8592;</button>
+      <div class="carousel-dots" id="carousel-dots">
+        <button class="carousel-dot" aria-label="Proyecto 1"></button>
+        <button class="carousel-dot" aria-label="Proyecto 2"></button>
+        <button class="carousel-dot" aria-label="Proyecto 3"></button>
+        <button class="carousel-dot" aria-label="Proyecto 4"></button>
+        <button class="carousel-dot" aria-label="Proyecto 5"></button>
+        <button class="carousel-dot" aria-label="Proyecto 6"></button>
+        <button class="carousel-dot" aria-label="Proyecto 7"></button>
+      </div>
+      <button class="carousel-btn" id="next-btn" aria-label="Siguiente">&#8594;</button>
+    </div>
+    <p class="carousel-hint">drag / swipe para girar · tap la tarjeta activa para ver detalles</p>
+  </section>
 
   <script>
     /* ─── Terminal Typewriter ──────────────────────────────────────────── */
@@ -425,6 +858,155 @@
     }
 
     runSequence();
+  </script>
+
+  <script>
+    /* ─── Projects Carousel ────────────────────────────────────────────── */
+    (function () {
+      const stage    = document.getElementById('carousel-stage');
+      const viewport = document.getElementById('carousel-viewport');
+      const cards    = [...document.querySelectorAll('.proj-card')];
+      const dots     = [...document.querySelectorAll('.carousel-dot')];
+      const N        = cards.length;
+
+      let curr       = 0;
+      let flipped    = -1;
+      let isDragging = false;
+      let dragStartX = 0;
+      let dragDelta  = 0;
+      let radius     = calcRadius();
+
+      function calcRadius() {
+        const w = window.innerWidth;
+        if (w < 480) return 210;
+        if (w < 768) return 265;
+        return 320;
+      }
+
+      function setupCards() {
+        cards.forEach((card, i) => {
+          const angle = (360 / N) * i;
+          card.style.transform = `rotateY(${angle}deg) translateZ(${radius}px)`;
+        });
+      }
+
+      function setTransition(on) {
+        stage.style.transition = on
+          ? 'transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+          : 'none';
+      }
+
+      function applyRotation(angle) {
+        stage.style.transform = `rotateY(${angle}deg)`;
+      }
+
+      function goTo(index, animate = true) {
+        // Unflip any open card
+        if (flipped !== -1) {
+          cards[flipped].querySelector('.card-inner').classList.remove('flipped');
+          flipped = -1;
+        }
+        curr = ((index % N) + N) % N;
+        setTransition(animate);
+        applyRotation(-(360 / N) * curr);
+        cards.forEach((c, i) => c.classList.toggle('active', i === curr));
+        dots.forEach((d, i)  => d.classList.toggle('active',  i === curr));
+      }
+
+      function flipActive() {
+        const inner = cards[curr].querySelector('.card-inner');
+        if (flipped === curr) {
+          inner.classList.remove('flipped');
+          flipped = -1;
+        } else {
+          if (flipped !== -1) {
+            cards[flipped].querySelector('.card-inner').classList.remove('flipped');
+          }
+          inner.classList.add('flipped');
+          flipped = curr;
+        }
+      }
+
+      // ── Event helpers ──
+      function onDragStart(x) {
+        isDragging = true;
+        dragStartX = x;
+        dragDelta  = 0;
+        setTransition(false);
+      }
+
+      function onDragMove(x) {
+        if (!isDragging) return;
+        dragDelta = x - dragStartX;
+        const base = -(360 / N) * curr;
+        applyRotation(base + dragDelta * 0.28);
+      }
+
+      function onDragEnd() {
+        if (!isDragging) return;
+        isDragging = false;
+        if (Math.abs(dragDelta) > 45) {
+          goTo(dragDelta > 0 ? curr - 1 : curr + 1);
+        } else {
+          goTo(curr);
+        }
+      }
+
+      // ── Bind events ──
+      document.getElementById('prev-btn').addEventListener('click', () => goTo(curr - 1));
+      document.getElementById('next-btn').addEventListener('click', () => goTo(curr + 1));
+
+      dots.forEach((dot, i) => dot.addEventListener('click', () => goTo(i)));
+
+      cards.forEach((card, i) => {
+        card.addEventListener('click', () => {
+          if (Math.abs(dragDelta) > 8) return;
+          if (i === curr) {
+            flipActive();
+          } else {
+            // Navigate shortest path
+            let diff = i - curr;
+            if (Math.abs(diff) > N / 2) diff = diff > 0 ? diff - N : diff + N;
+            goTo(curr + diff);
+          }
+        });
+      });
+
+      // Mouse
+      viewport.addEventListener('mousedown',  e => onDragStart(e.clientX));
+      window .addEventListener('mousemove',   e => { if (isDragging) onDragMove(e.clientX); });
+      window .addEventListener('mouseup',     ()  => onDragEnd());
+
+      // Touch
+      viewport.addEventListener('touchstart', e => onDragStart(e.touches[0].clientX),      { passive: true });
+      window  .addEventListener('touchmove',  e => onDragMove(e.touches[0].clientX),        { passive: true });
+      window  .addEventListener('touchend',   e => { dragDelta = e.changedTouches[0].clientX - dragStartX; onDragEnd(); });
+
+      // Keyboard
+      document.addEventListener('keydown', e => {
+        if (e.key === 'ArrowLeft')  goTo(curr - 1);
+        if (e.key === 'ArrowRight') goTo(curr + 1);
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flipActive(); }
+        if (e.key === 'Escape' && flipped !== -1) {
+          cards[flipped].querySelector('.card-inner').classList.remove('flipped');
+          flipped = -1;
+        }
+      });
+
+      // Resize
+      window.addEventListener('resize', () => {
+        const newR = calcRadius();
+        if (newR !== radius) {
+          radius = newR;
+          setupCards();
+          goTo(curr, false);
+        }
+      });
+
+      // Init
+      setupCards();
+      goTo(0, false);
+    })();
   </script>
 
 </body>
