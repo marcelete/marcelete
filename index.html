@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marcelo Bellizia — Analista de Datos & IA</title>
+  <meta name="description" content="Portafolio de Marcelo Bellizia — Analista de Datos, Automatización y Especialista en IA. Buenos Aires, Argentina.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ─── Reset & Base ─────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:         #080c14;
+      --bg-surface: #0d1221;
+      --bg-card:    #111827;
+      --border:     #1e2d45;
+      --blue:       #00b4ff;
+      --blue-dim:   #0077aa;
+      --green:      #00ff88;
+      --green-dim:  #00aa55;
+      --text:       #d4dff0;
+      --text-dim:   #5a7090;
+      --text-muted: #3a5070;
+      --accent:     #00b4ff;
+      --font-mono:  'JetBrains Mono', 'Fira Code', monospace;
+      --font-sans:  'Inter', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ─── Scrollbar ─────────────────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* ─── Hero Section ──────────────────────────────────────────────────── */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* grid bg pattern */
+    #hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 40px 40px;
+      opacity: 0.18;
+      pointer-events: none;
+    }
+
+    /* radial glow */
+    #hero::after {
+      content: '';
+      position: absolute;
+      top: 30%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(0,180,255,.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* ─── Terminal Window ───────────────────────────────────────────────── */
+    .terminal-window {
+      width: 100%;
+      max-width: 740px;
+      background: rgba(13, 18, 33, 0.92);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow:
+        0 0 0 1px rgba(0,180,255,.08),
+        0 24px 80px rgba(0,0,0,.7),
+        0 0 60px rgba(0,180,255,.06);
+      position: relative;
+      z-index: 1;
+      backdrop-filter: blur(8px);
+    }
+
+    .terminal-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,.02);
+      border-radius: 12px 12px 0 0;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .dot.r { background: #ff5f57; }
+    .dot.y { background: #ffbd2e; }
+    .dot.g { background: #28c840; }
+
+    .terminal-title {
+      flex: 1;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      letter-spacing: 0.05em;
+    }
+
+    .terminal-body {
+      padding: 24px 28px 28px;
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      line-height: 1.75;
+      min-height: 320px;
+    }
+
+    /* ─── Terminal lines ────────────────────────────────────────────────── */
+    .t-line {
+      display: flex;
+      align-items: flex-start;
+      gap: 0;
+    }
+
+    .t-prompt {
+      color: var(--green);
+      flex-shrink: 0;
+      user-select: none;
+    }
+
+    .t-cmd { color: var(--text); }
+
+    .t-output       { color: var(--text-dim); padding-left: 0; }
+    .t-output.name  { color: var(--blue); font-weight: 700; font-size: 1.1rem; }
+    .t-output.role  { color: var(--text); }
+    .t-output.loc   { color: var(--text-dim); font-size: 0.82rem; }
+    .t-output.ok    { color: var(--green); }
+    .t-output.dim   { color: var(--text-muted); font-size: 0.8rem; }
+
+    .t-skills-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 16px;
+      padding-top: 2px;
+    }
+
+    .t-skill-item {
+      color: var(--blue);
+      font-size: 0.82rem;
+    }
+
+    .t-skill-item::before { content: ''; color: var(--text-dim); }
+
+    .t-blank { height: 0.5em; }
+
+    .cursor {
+      display: inline-block;
+      width: 9px;
+      height: 1.1em;
+      background: var(--green);
+      vertical-align: text-bottom;
+      animation: blink 1s step-end infinite;
+      margin-left: 1px;
+      border-radius: 1px;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0; }
+    }
+
+    /* hidden until typed in */
+    .t-hidden { opacity: 0; }
+
+    /* ─── Tagline below terminal ────────────────────────────────────────── */
+    .hero-tagline {
+      margin-top: 2rem;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity .6s ease, transform .6s ease;
+      z-index: 1;
+      position: relative;
+    }
+
+    .hero-tagline.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .hero-tagline p {
+      color: var(--text-dim);
+      font-size: 0.85rem;
+      letter-spacing: 0.04em;
+    }
+
+    .hero-scroll-hint {
+      margin-top: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      opacity: 0;
+      transition: opacity .6s ease .4s;
+      z-index: 1;
+      position: relative;
+    }
+
+    .hero-scroll-hint.visible { opacity: 1; }
+
+    .hero-scroll-hint span {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+    }
+
+    .scroll-arrow {
+      width: 18px;
+      height: 18px;
+      border-right: 2px solid var(--text-muted);
+      border-bottom: 2px solid var(--text-muted);
+      transform: rotate(45deg);
+      animation: bounce 1.6s ease infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: rotate(45deg) translateY(0); }
+      50%       { transform: rotate(45deg) translateY(4px); }
+    }
+
+    /* ─── Placeholder for future sections ──────────────────────────────── */
+    .coming-soon {
+      text-align: center;
+      padding: 6rem 1rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+    }
+
+    /* ─── Responsive ────────────────────────────────────────────────────── */
+    @media (max-width: 600px) {
+      .terminal-body {
+        padding: 16px 16px 20px;
+        font-size: 0.78rem;
+      }
+      .t-output.name { font-size: 0.95rem; }
+      .terminal-title { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════ HERO ══ -->
+  <section id="hero">
+    <div class="terminal-window">
+      <div class="terminal-bar">
+        <span class="dot r"></span>
+        <span class="dot y"></span>
+        <span class="dot g"></span>
+        <span class="terminal-title">bash — marcelete@portfolio:~</span>
+      </div>
+      <div class="terminal-body" id="terminal-body">
+        <!-- filled by JS -->
+        <span class="cursor" id="main-cursor"></span>
+      </div>
+    </div>
+
+    <div class="hero-tagline" id="hero-tagline">
+      <p>Buenos Aires, Argentina &nbsp;·&nbsp; Disponible para proyectos</p>
+    </div>
+
+    <div class="hero-scroll-hint" id="scroll-hint">
+      <span>scroll para explorar</span>
+      <div class="scroll-arrow"></div>
+    </div>
+  </section>
+
+  <!-- future sections mount here -->
+  <div class="coming-soon" id="sections-placeholder">
+    <!-- próximas secciones -->
+  </div>
+
+  <script>
+    /* ─── Terminal Typewriter ──────────────────────────────────────────── */
+    const body   = document.getElementById('terminal-body');
+    const cursor = document.getElementById('main-cursor');
+
+    // sequence of actions: each item is [type, payload, delay_before]
+    const SEQ = [
+      ['cmd',    'whoami',                                          400],
+      ['out',    { text: 'marcebellizia',         cls: '' }],
+      ['blank'],
+      ['cmd',    'cat ~/perfil.txt',                                300],
+      ['out',    { text: 'Marcelo (Chelo) Bellizia', cls: 'name' }],
+      ['out',    { text: 'Analista de Datos · Automatización · Especialista en IA', cls: 'role' }],
+      ['out',    { text: '📍 Buenos Aires, Argentina', cls: 'loc' }],
+      ['blank'],
+      ['cmd',    'ls ~/skills/',                                    200],
+      ['skills', ['Python', 'SQL', 'JavaScript', 'Flutter', 'Firebase',
+                  'Supabase', 'Claude Code', 'Selenium', 'Ollama / LM Studio',
+                  'Looker Studio', 'VBA / Excel', 'GitHub Pages']],
+      ['blank'],
+      ['cmd',    './cargar_portafolio.sh',                          400],
+      ['out',    { text: '[✓] Portafolio cargado. Explorá abajo ↓', cls: 'ok' }],
+      ['done'],
+    ];
+
+    const TYPE_SPEED   = 38;   // ms per char while typing command
+    const CMD_PAUSE    = 260;  // ms after command before output appears
+    const STEP_DELAY   = 80;   // ms between output lines
+
+    let seqIndex = 0;
+    let done     = false;
+
+    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+    function makeLine(content, extraClass = '') {
+      const div = document.createElement('div');
+      div.className = 't-line' + (extraClass ? ' ' + extraClass : '');
+      div.innerHTML = content;
+      body.insertBefore(div, cursor);
+      return div;
+    }
+
+    async function typeCommand(text) {
+      const line = document.createElement('div');
+      line.className = 't-line';
+      const prompt = document.createElement('span');
+      prompt.className = 't-prompt';
+      prompt.textContent = '$ ';
+      const cmd = document.createElement('span');
+      cmd.className = 't-cmd';
+      line.appendChild(prompt);
+      line.appendChild(cmd);
+      body.insertBefore(line, cursor);
+
+      for (const ch of text) {
+        cmd.textContent += ch;
+        await sleep(TYPE_SPEED + (Math.random() * 18 - 9));
+      }
+      await sleep(CMD_PAUSE);
+    }
+
+    async function printOutput(text, cls) {
+      const line = document.createElement('div');
+      line.className = 't-output' + (cls ? ' ' + cls : '');
+      line.textContent = text;
+      body.insertBefore(line, cursor);
+      await sleep(STEP_DELAY);
+    }
+
+    async function printSkills(skills) {
+      const grid = document.createElement('div');
+      grid.className = 't-skills-grid';
+      body.insertBefore(grid, cursor);
+
+      for (const s of skills) {
+        const span = document.createElement('span');
+        span.className = 't-skill-item';
+        span.textContent = s;
+        grid.appendChild(span);
+        await sleep(60);
+      }
+      await sleep(STEP_DELAY);
+    }
+
+    function printBlank() {
+      const div = document.createElement('div');
+      div.className = 't-blank';
+      body.insertBefore(div, cursor);
+    }
+
+    function showFinalUI() {
+      document.getElementById('hero-tagline').classList.add('visible');
+      document.getElementById('scroll-hint').classList.add('visible');
+    }
+
+    async function runSequence() {
+      for (const step of SEQ) {
+        const [type, payload, delayBefore] = step;
+        if (delayBefore) await sleep(delayBefore);
+
+        switch (type) {
+          case 'cmd':
+            await typeCommand(payload);
+            break;
+          case 'out':
+            await printOutput(payload.text, payload.cls);
+            break;
+          case 'skills':
+            await printSkills(payload);
+            break;
+          case 'blank':
+            printBlank();
+            break;
+          case 'done':
+            await sleep(700);
+            showFinalUI();
+            break;
+        }
+      }
+    }
+
+    runSequence();
+  </script>
+
+</body>
+</html>
