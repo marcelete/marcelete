@@ -1129,11 +1129,14 @@
       const cards    = [...document.querySelectorAll('.proj-card')];
       const dots     = [...document.querySelectorAll('.carousel-dot')];
       const N        = cards.length;
+      const STEP     = 360 / N; // degrees per card
 
       let curr       = 0;
+      let angle      = 0;    // continuous accumulated angle — never reset
       let flipped    = -1;
       let isDragging = false;
       let dragStartX = 0;
+      let dragStartA = 0;    // angle snapshot at drag start
       let dragDelta  = 0;
       let radius     = calcRadius();
 
@@ -1146,8 +1149,7 @@
 
       function setupCards() {
         cards.forEach((card, i) => {
-          const angle = (360 / N) * i;
-          card.style.transform = `rotateY(${angle}deg) translateZ(${radius}px)`;
+          card.style.transform = `rotateY(${STEP * i}deg) translateZ(${radius}px)`;
         });
       }
 
@@ -1157,21 +1159,45 @@
           : 'none';
       }
 
-      function applyRotation(angle) {
+      function commit(animate = true) {
+        setTransition(animate);
         stage.style.transform = `rotateY(${angle}deg)`;
+        cards.forEach((c, i) => c.classList.toggle('active', i === curr));
+        dots.forEach((d, i)  => d.classList.toggle('active',  i === curr));
       }
 
-      function goTo(index, animate = true) {
-        // Unflip any open card
+      function unflip() {
         if (flipped !== -1) {
           cards[flipped].querySelector('.card-inner').classList.remove('flipped');
           flipped = -1;
         }
-        curr = ((index % N) + N) % N;
-        setTransition(animate);
-        applyRotation(-(360 / N) * curr);
-        cards.forEach((c, i) => c.classList.toggle('active', i === curr));
-        dots.forEach((d, i)  => d.classList.toggle('active',  i === curr));
+      }
+
+      // Always rotates in the same direction — no wrap-around reversal
+      function next() {
+        unflip();
+        angle -= STEP;
+        curr = (curr + 1) % N;
+        commit();
+      }
+
+      function prev() {
+        unflip();
+        angle += STEP;
+        curr = (curr - 1 + N) % N;
+        commit();
+      }
+
+      // Used by dots: takes shortest visual path
+      function goTo(target) {
+        if (target === curr) return;
+        unflip();
+        let diff = target - curr;
+        if (diff >  N / 2) diff -= N;
+        if (diff < -N / 2) diff += N;
+        angle -= diff * STEP;
+        curr = target;
+        commit();
       }
 
       function flipActive() {
@@ -1188,10 +1214,11 @@
         }
       }
 
-      // ── Event helpers ──
+      // ── Drag ──
       function onDragStart(x) {
         isDragging = true;
         dragStartX = x;
+        dragStartA = angle;
         dragDelta  = 0;
         setTransition(false);
       }
@@ -1199,74 +1226,59 @@
       function onDragMove(x) {
         if (!isDragging) return;
         dragDelta = x - dragStartX;
-        const base = -(360 / N) * curr;
-        applyRotation(base + dragDelta * 0.28);
+        stage.style.transform = `rotateY(${dragStartA + dragDelta * 0.28}deg)`;
       }
 
       function onDragEnd() {
         if (!isDragging) return;
         isDragging = false;
         if (Math.abs(dragDelta) > 45) {
-          goTo(dragDelta > 0 ? curr - 1 : curr + 1);
+          if (dragDelta > 0) prev(); else next();
         } else {
-          goTo(curr);
+          commit(); // snap back to current card
         }
       }
 
-      // ── Bind events ──
-      document.getElementById('prev-btn').addEventListener('click', () => goTo(curr - 1));
-      document.getElementById('next-btn').addEventListener('click', () => goTo(curr + 1));
-
+      // ── Events ──
+      document.getElementById('prev-btn').addEventListener('click', prev);
+      document.getElementById('next-btn').addEventListener('click', next);
       dots.forEach((dot, i) => dot.addEventListener('click', () => goTo(i)));
 
       cards.forEach((card, i) => {
         card.addEventListener('click', () => {
           if (Math.abs(dragDelta) > 8) return;
-          if (i === curr) {
-            flipActive();
-          } else {
-            // Navigate shortest path
-            let diff = i - curr;
-            if (Math.abs(diff) > N / 2) diff = diff > 0 ? diff - N : diff + N;
-            goTo(curr + diff);
-          }
+          if (i === curr) flipActive();
+          else goTo(i);
         });
       });
 
-      // Mouse
       viewport.addEventListener('mousedown',  e => onDragStart(e.clientX));
-      window .addEventListener('mousemove',   e => { if (isDragging) onDragMove(e.clientX); });
-      window .addEventListener('mouseup',     ()  => onDragEnd());
+      window  .addEventListener('mousemove',  e => { if (isDragging) onDragMove(e.clientX); });
+      window  .addEventListener('mouseup',    ()  => onDragEnd());
 
-      // Touch
-      viewport.addEventListener('touchstart', e => onDragStart(e.touches[0].clientX),      { passive: true });
-      window  .addEventListener('touchmove',  e => onDragMove(e.touches[0].clientX),        { passive: true });
+      viewport.addEventListener('touchstart', e => onDragStart(e.touches[0].clientX),     { passive: true });
+      window  .addEventListener('touchmove',  e => { if (isDragging) onDragMove(e.touches[0].clientX); }, { passive: true });
       window  .addEventListener('touchend',   e => { dragDelta = e.changedTouches[0].clientX - dragStartX; onDragEnd(); });
 
-      // Keyboard
       document.addEventListener('keydown', e => {
-        if (e.key === 'ArrowLeft')  goTo(curr - 1);
-        if (e.key === 'ArrowRight') goTo(curr + 1);
+        if (e.key === 'ArrowLeft')  prev();
+        if (e.key === 'ArrowRight') next();
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flipActive(); }
-        if (e.key === 'Escape' && flipped !== -1) {
-          cards[flipped].querySelector('.card-inner').classList.remove('flipped');
-          flipped = -1;
-        }
+        if (e.key === 'Escape') unflip();
       });
 
-      // Resize
       window.addEventListener('resize', () => {
         const newR = calcRadius();
         if (newR !== radius) {
           radius = newR;
           setupCards();
-          goTo(curr, false);
+          commit(false);
         }
       });
 
       // Init
       setupCards();
-      goTo(0, false);
+      commit(false);
     })();
   </script>
 
