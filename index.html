@@ -178,7 +178,12 @@
     .contact-card.github .contact-icon svg { stroke: #a78bfa; }
     .contact-card.linkedin .contact-icon svg { stroke: var(--blue); }
 
-    .contact-info { text-align: left; }
+    .contact-info {
+      text-align: left;
+      min-width: 0;   /* allow flex child to shrink */
+      flex: 1;
+      overflow: hidden;
+    }
 
     .contact-label {
       font-family: var(--font-mono);
@@ -194,6 +199,10 @@
       font-size: 0.82rem;
       color: var(--text);
       font-weight: 500;
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     /* ─── Footer ────────────────────────────────────────────────────────── */
@@ -712,6 +721,119 @@
       font-family: var(--font-mono);
       font-size: 0.68rem;
       color: var(--text-muted);
+    }
+
+    /* ─── About Section ─────────────────────────────────────────────────── */
+    #about {
+      padding: 7rem 1rem 6rem;
+      position: relative;
+    }
+
+    #about::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+    }
+
+    .about-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3.5rem;
+      max-width: 860px;
+      margin: 0 auto;
+      align-items: center;
+    }
+
+    /* ── Terminal photo window ── */
+    .about-photo-window {
+      border: 1px solid rgba(0,255,136,0.28);
+      border-radius: 12px;
+      background: var(--bg-card);
+      box-shadow: 0 0 28px rgba(0,255,136,0.08), 0 0 60px rgba(0,255,136,0.04);
+      overflow: hidden;
+      opacity: 0;
+      transform: translateX(-24px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+
+    .about-photo-window.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .about-photo-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(0,255,136,0.15);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .about-photo-bar .terminal-title {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+    }
+
+    .about-photo-body {
+      position: relative;
+      line-height: 0;
+    }
+
+    .about-photo-body img {
+      width: 100%;
+      display: block;
+      filter: saturate(0.9) contrast(1.05);
+    }
+
+    /* scanlines overlay */
+    .about-photo-body::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent,
+        transparent 3px,
+        rgba(0,0,0,0.09) 3px,
+        rgba(0,0,0,0.09) 4px
+      );
+      pointer-events: none;
+    }
+
+    /* ── Right text column ── */
+    .about-text {
+      opacity: 0;
+      transform: translateX(24px);
+      transition: opacity 0.55s ease 0.15s, transform 0.55s ease 0.15s;
+    }
+
+    .about-text.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .about-bio {
+      color: var(--text-dim);
+      font-size: 0.95rem;
+      line-height: 1.75;
+      margin: 1rem 0 1.5rem;
+    }
+
+    .about-tech {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    @media (max-width: 680px) {
+      .about-layout {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+      .about-photo-window { max-width: 300px; margin: 0 auto; }
     }
 
     /* ─── Experience Timeline ───────────────────────────────────────────── */
@@ -1241,6 +1363,46 @@
     </div>
   </section>
 
+  <!-- ════════════════════════════════════════════════ ABOUT ══ -->
+  <section id="about">
+    <div class="about-layout">
+
+      <!-- Photo terminal window -->
+      <div class="about-photo-window" id="about-photo">
+        <div class="about-photo-bar">
+          <span class="dot r"></span>
+          <span class="dot y"></span>
+          <span class="dot g"></span>
+          <span class="terminal-title">about.exe</span>
+        </div>
+        <div class="about-photo-body">
+          <img src="img/about-pixel.png" alt="Marcelo Bellizia — pixel art portrait">
+        </div>
+      </div>
+
+      <!-- Text -->
+      <div class="about-text" id="about-text">
+        <p class="section-label">// sobre mí</p>
+        <h2 class="section-title">Marcelo Bellizia</h2>
+        <p class="about-bio">
+          Analista de datos y desarrollador autodidacta con base en Buenos Aires.
+          Automatizo procesos, construyo herramientas que resuelven problemas reales
+          y aprendo haciendo. Trabajo con Python, Flutter y JS.
+          Siempre con una terminal abierta.
+        </p>
+        <div class="about-tech">
+          <span class="stack-badge">Python</span>
+          <span class="stack-badge">Flutter</span>
+          <span class="stack-badge">JavaScript</span>
+          <span class="stack-badge">Firebase</span>
+          <span class="stack-badge">Selenium</span>
+          <span class="stack-badge">Git</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
   <!-- ══════════════════════════════════════════════ PROJECTS ══ -->
   <section id="projects">
     <div class="section-header">
@@ -1745,7 +1907,7 @@
       const toggle  = document.getElementById('nav-toggle');
       const links   = document.getElementById('nav-links');
       const navAs   = [...links.querySelectorAll('a')];
-      const sections = ['projects','experience','skills','contact'].map(id => document.getElementById(id));
+      const sections = ['about','projects','experience','skills','contact'].map(id => document.getElementById(id));
 
       // Scroll: add glass bg + track active section
       window.addEventListener('scroll', () => {
@@ -1928,6 +2090,22 @@
   </script>
 
   <script>
+    /* ─── About section fade-in ───────────────────────────────────────── */
+    (function () {
+      const targets = [
+        document.getElementById('about-photo'),
+        document.getElementById('about-text'),
+      ].filter(Boolean);
+
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.2 });
+
+      targets.forEach(el => io.observe(el));
+    })();
+
     /* ─── Experience Timeline ─────────────────────────────────────────── */
     (function () {
       const items   = [...document.querySelectorAll('.tl-item')];
