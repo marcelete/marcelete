@@ -3,7 +3,7 @@
 **Marcelo (Chelo) Bellizia** — Analista de Datos, Automatización y Especialista en IA.
 Buenos Aires, Argentina.
 
-🌐 **[marcelete.github.io](https://marcelete.github.io)**
+🌐 **[marcelete.github.io](https://marcelete.github.io/marcelete)**
 
 ---
 
