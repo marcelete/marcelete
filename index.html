@@ -10,6 +10,211 @@
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
+    /* ─── Navbar ────────────────────────────────────────────────────────── */
+    #navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      height: 56px;
+      background: rgba(8,12,20,0);
+      backdrop-filter: blur(0px);
+      transition: background 0.3s ease, backdrop-filter 0.3s ease, border-color 0.3s ease;
+      border-bottom: 1px solid transparent;
+    }
+
+    #navbar.scrolled {
+      background: rgba(8,12,20,0.88);
+      backdrop-filter: blur(12px);
+      border-color: var(--border);
+    }
+
+    .nav-logo {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--green);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+    }
+
+    .nav-logo span { color: var(--text-dim); }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .nav-links a {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      text-decoration: none;
+      letter-spacing: 0.06em;
+      transition: color 0.2s;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px; left: 0; right: 0;
+      height: 1px;
+      background: var(--blue);
+      transform: scaleX(0);
+      transition: transform 0.2s ease;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active { color: var(--text); }
+
+    .nav-links a:hover::after,
+    .nav-links a.active::after { transform: scaleX(1); }
+
+    /* Mobile: hide nav links, show hamburger */
+    .nav-toggle {
+      display: none;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 5px 8px;
+      cursor: pointer;
+      color: var(--text-dim);
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    @media (max-width: 600px) {
+      .nav-links { display: none; flex-direction: column; gap: 0; }
+      .nav-links.open {
+        display: flex;
+        position: fixed;
+        top: 56px; left: 0; right: 0;
+        background: rgba(8,12,20,0.97);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 2rem 1.5rem;
+      }
+      .nav-links a { padding: 0.6rem 0; font-size: 0.9rem; }
+      .nav-toggle { display: block; }
+    }
+
+    /* ─── Contact Section ───────────────────────────────────────────────── */
+    #contact {
+      padding: 7rem 1rem 5rem;
+      position: relative;
+      text-align: center;
+    }
+
+    #contact::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+    }
+
+    .contact-heading {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.75rem;
+    }
+
+    .contact-sub {
+      color: var(--text-dim);
+      font-size: 0.95rem;
+      margin-bottom: 3rem;
+    }
+
+    .contact-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    .contact-card {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.1rem 1.6rem;
+      text-decoration: none;
+      color: var(--text);
+      transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+      flex: 1 1 200px;
+      max-width: 280px;
+      min-width: 180px;
+    }
+
+    .contact-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(0,180,255,0.4);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 24px rgba(0,180,255,0.1);
+    }
+
+    .contact-card.email:hover  { border-color: rgba(0,255,136,0.4); box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 24px rgba(0,255,136,0.1); }
+    .contact-card.github:hover { border-color: rgba(167,139,250,0.4); box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 24px rgba(167,139,250,0.1); }
+
+    .contact-icon {
+      width: 36px; height: 36px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .contact-icon svg { width: 22px; height: 22px; }
+
+    .contact-card.email  .contact-icon svg { stroke: var(--green); }
+    .contact-card.github .contact-icon svg { stroke: #a78bfa; }
+    .contact-card.linkedin .contact-icon svg { stroke: var(--blue); }
+
+    .contact-info { text-align: left; }
+
+    .contact-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .contact-value {
+      font-size: 0.82rem;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    /* ─── Footer ────────────────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem 1rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    footer p {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    footer a { color: var(--text-dim); text-decoration: none; }
+    footer a:hover { color: var(--blue); }
+
     /* ─── Reset & Base ─────────────────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -1000,6 +1205,17 @@
 </head>
 <body>
 
+  <nav id="navbar">
+    <a class="nav-logo" href="#hero">&gt;_ <span>marcelete</span></a>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Menú">&#9776;</button>
+    <div class="nav-links" id="nav-links">
+      <a href="#projects">proyectos</a>
+      <a href="#experience">experiencia</a>
+      <a href="#skills">habilidades</a>
+      <a href="#contact">contacto</a>
+    </div>
+  </nav>
+
   <!-- ═══════════════════════════════════════════════════════ HERO ══ -->
   <section id="hero">
     <div class="terminal-window">
@@ -1343,6 +1559,61 @@
     </div>
   </section>
 
+  <!-- ══════════════════════════════════════════════ CONTACT ══ -->
+  <section id="contact">
+    <p class="section-label">// contacto</p>
+    <h2 class="contact-heading">¿Hablamos?</h2>
+    <p class="contact-sub">Abierto a proyectos, colaboraciones y oportunidades.</p>
+
+    <div class="contact-grid">
+
+      <a class="contact-card email" href="mailto:marcebellizia@gmail.com">
+        <div class="contact-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="4" width="20" height="16" rx="2"/>
+            <path d="m2 7 10 7 10-7"/>
+          </svg>
+        </div>
+        <div class="contact-info">
+          <span class="contact-label">Email</span>
+          <span class="contact-value">marcebellizia@gmail.com</span>
+        </div>
+      </a>
+
+      <a class="contact-card github" href="https://github.com/marcelete" target="_blank" rel="noopener">
+        <div class="contact-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+          </svg>
+        </div>
+        <div class="contact-info">
+          <span class="contact-label">GitHub</span>
+          <span class="contact-value">github.com/marcelete</span>
+        </div>
+      </a>
+
+      <a class="contact-card linkedin" href="https://linkedin.com/in/mbellizia/" target="_blank" rel="noopener">
+        <div class="contact-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+            <rect x="2" y="9" width="4" height="12"/>
+            <circle cx="4" cy="4" r="2"/>
+          </svg>
+        </div>
+        <div class="contact-info">
+          <span class="contact-label">LinkedIn</span>
+          <span class="contact-value">linkedin.com/in/mbellizia</span>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <footer>
+    <p>Marcelo Bellizia &nbsp;·&nbsp; Buenos Aires, Argentina &nbsp;·&nbsp; 2026</p>
+    <p>Construido con HTML, CSS y JS puro &nbsp;·&nbsp; <a href="https://github.com/marcelete/marcelete" target="_blank" rel="noopener">Ver código en GitHub</a></p>
+  </footer>
+
   <script>
     /* ─── Terminal Typewriter ──────────────────────────────────────────── */
     const body   = document.getElementById('terminal-body');
@@ -1465,6 +1736,34 @@
     }
 
     runSequence();
+  </script>
+
+  <script>
+    /* ─── Navbar ──────────────────────────────────────────────────────── */
+    (function () {
+      const navbar  = document.getElementById('navbar');
+      const toggle  = document.getElementById('nav-toggle');
+      const links   = document.getElementById('nav-links');
+      const navAs   = [...links.querySelectorAll('a')];
+      const sections = ['projects','experience','skills','contact'].map(id => document.getElementById(id));
+
+      // Scroll: add glass bg + track active section
+      window.addEventListener('scroll', () => {
+        navbar.classList.toggle('scrolled', window.scrollY > 40);
+
+        let active = '';
+        sections.forEach(sec => {
+          if (sec && sec.getBoundingClientRect().top < window.innerHeight * 0.45) {
+            active = sec.id;
+          }
+        });
+        navAs.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + active));
+      }, { passive: true });
+
+      // Mobile toggle
+      toggle.addEventListener('click', () => links.classList.toggle('open'));
+      navAs.forEach(a => a.addEventListener('click', () => links.classList.remove('open')));
+    })();
   </script>
 
   <script>
