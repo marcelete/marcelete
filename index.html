@@ -349,15 +349,18 @@
 
     .hero-name {
       font-family: var(--font-display);
-      font-size: clamp(4rem, 12vw, 10rem);
+      font-size: clamp(2.8rem, 8.5vw, 9rem);
       font-weight: 900;
-      line-height: 0.9;
+      line-height: 0.92;
       letter-spacing: -0.03em;
       background: linear-gradient(135deg, var(--text) 0%, rgba(226,232,240,0.55) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
       margin-bottom: 1.5rem;
+      max-width: 100%;
+      overflow-wrap: break-word;
+      word-break: break-word;
     }
 
     .hero-typewriter {
@@ -1614,135 +1617,115 @@
   })();
 
   /* ============================================================
-     ISOMETRIC CANVAS — Ice Cube Grid
+     FRONT-FACING CUBE GRID — fills entire background
   ============================================================ */
   (function () {
     const canvas = document.getElementById('iso-canvas');
     const ctx    = canvas.getContext('2d');
 
-    const COLS = 17;
-    const ROWS = 15;
+    const MAX_LIFT = 52;       // max rise in px (used for color intensity)
+    const GAP      = 1;        // 1px gap between cells
+    let CELL = 60;             // cell size, recalculated on resize
 
-    // Viewport / scale
-    let W, H, cw, ch, cd, ox, oy;
+    let W, H, COLS, ROWS, cubes;
+    let px = -9999, py = -9999;
+    let t  = 0;
 
     function resize() {
       W = canvas.width  = window.innerWidth;
       H = canvas.height = window.innerHeight;
-      const s = Math.max(W / 960, 0.55);
-      cw = 64 * s; ch = 34 * s; cd = 30 * s;
-      ox = W / 2;
-      oy = H * 0.36;
+      // Aim for ~20 cols — makes cells reasonably sized on any screen
+      CELL = Math.round(W / 20);
+      COLS = Math.ceil(W / CELL) + 1;
+      ROWS = Math.ceil(H / CELL) + 1;
+      buildGrid();
     }
 
-    window.addEventListener('resize', resize);
-    resize();
-
-    // Cube state
-    const cubes = [];
-    for (let r = 0; r < ROWS; r++) {
-      for (let c = 0; c < COLS; c++) {
-        cubes.push({ r, c, phase: (r + c) * 0.42, y: 0, vy: 0, target: 0 });
+    function buildGrid() {
+      cubes = [];
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          cubes.push({
+            c, r,
+            phase: (c * 0.37 + r * 0.53),
+            lift: 0, vel: 0, target: 0,
+          });
+        }
       }
     }
 
-    // Mouse / touch
-    let px = -9999, py = -9999;
-    window.addEventListener('mousemove', e => { px = e.clientX; py = e.clientY; });
-    window.addEventListener('touchmove', e => {
-      const t = e.touches[0]; px = t.clientX; py = t.clientY;
-    }, { passive: true });
-    window.addEventListener('touchend', () => { px = -9999; py = -9999; });
+    function drawCell(c, r, lift) {
+      const x = c * CELL;
+      const y = r * CELL;
+      const S = CELL - GAP;
+      const f = Math.min(lift / MAX_LIFT, 1); // 0..1
 
-    function isoXY(c, r, lift) {
-      return {
-        x: ox + (c - r) * (cw / 2),
-        y: oy + (c + r) * (ch / 2) - lift,
-      };
+      // Main face — dark, brightens with lift
+      ctx.fillStyle = `hsl(215,${10 + f * 38}%,${4 + f * 18}%)`;
+      ctx.fillRect(x, y, S, S);
+
+      if (f > 0.01) {
+        const bevel = Math.max(1, f * 4);
+
+        // Top & left highlight (light source from top-left)
+        ctx.fillStyle = `rgba(100,210,255,${f * 0.55})`;
+        ctx.fillRect(x, y, S, bevel);           // top
+        ctx.fillRect(x, y, bevel, S);           // left
+
+        // Bottom & right shadow
+        ctx.fillStyle = `rgba(0,0,0,${0.2 + f * 0.35})`;
+        ctx.fillRect(x, y + S - bevel, S, bevel);   // bottom
+        ctx.fillRect(x + S - bevel, y, bevel, S);   // right
+      }
+
+      // Grid line (always visible, slightly brighter when lifted)
+      ctx.strokeStyle = `rgba(14,165,233,${0.04 + f * 0.18})`;
+      ctx.lineWidth = 0.5;
+      ctx.strokeRect(x + 0.5, y + 0.5, S - 1, S - 1);
     }
-
-    function drawCube(c, r, lift) {
-      const { x, y } = isoXY(c, r, lift);
-      const intensity = Math.min(lift / 55, 1);
-      const tL = 16 + intensity * 26;
-      const lL = 10 + intensity * 14;
-      const rL =  7 + intensity * 10;
-      const tS = 18 + intensity * 28;
-
-      // Top face
-      ctx.beginPath();
-      ctx.moveTo(x,        y - ch);
-      ctx.lineTo(x + cw/2, y);
-      ctx.lineTo(x,        y + ch);
-      ctx.lineTo(x - cw/2, y);
-      ctx.closePath();
-      ctx.fillStyle = `hsl(210,${tS}%,${tL}%)`;
-      ctx.fill();
-
-      // Left face
-      ctx.beginPath();
-      ctx.moveTo(x - cw/2, y);
-      ctx.lineTo(x,        y + ch);
-      ctx.lineTo(x,        y + ch + cd);
-      ctx.lineTo(x - cw/2, y + cd);
-      ctx.closePath();
-      ctx.fillStyle = `hsl(215,14%,${lL}%)`;
-      ctx.fill();
-
-      // Right face
-      ctx.beginPath();
-      ctx.moveTo(x + cw/2, y);
-      ctx.lineTo(x,        y + ch);
-      ctx.lineTo(x,        y + ch + cd);
-      ctx.lineTo(x + cw/2, y + cd);
-      ctx.closePath();
-      ctx.fillStyle = `hsl(220,12%,${rL}%)`;
-      ctx.fill();
-
-      // Subtle edge lines
-      ctx.strokeStyle = `rgba(14,165,233,${0.04 + intensity * 0.06})`;
-      ctx.lineWidth = 0.6;
-      ctx.beginPath();
-      ctx.moveTo(x,        y - ch);
-      ctx.lineTo(x + cw/2, y); ctx.lineTo(x, y + ch); ctx.lineTo(x - cw/2, y);
-      ctx.closePath(); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(x - cw/2, y); ctx.lineTo(x - cw/2, y + cd); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(x,         y + ch); ctx.lineTo(x, y + ch + cd); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(x + cw/2,  y); ctx.lineTo(x + cw/2, y + cd); ctx.stroke();
-    }
-
-    let t = 0;
 
     function animate() {
       requestAnimationFrame(animate);
       t += 0.012;
       ctx.clearRect(0, 0, W, H);
 
-      // Painter's order: ascending (c + r)
-      const sorted = cubes.slice().sort((a, b) => (a.c + a.r) - (b.c + b.r));
+      for (const cube of cubes) {
+        const cx = cube.c * CELL + CELL / 2;
+        const cy = cube.r * CELL + CELL / 2;
 
-      for (const cube of sorted) {
-        const { r, c } = cube;
-        const bob = Math.sin(t + cube.phase) * 3.5;
-        const { x, y } = isoXY(c, r, 0);
-        const dist = Math.hypot(px - x, py - y);
-        const rad  = cw * 2.2;
-        cube.target = Math.max(0, 1 - dist / rad) * 52;
+        // Ambient bob
+        const bob = Math.sin(t + cube.phase) * 2.5;
 
-        // Spring
-        cube.vy += (cube.target - cube.y) * 0.13;
-        cube.vy *= 0.73;
-        cube.y  += cube.vy;
+        // Mouse proximity lift
+        const dist = Math.hypot(px - cx, py - cy);
+        const rad  = CELL * 3.5;
+        cube.target = dist < rad
+          ? Math.pow(1 - dist / rad, 1.6) * MAX_LIFT
+          : 0;
 
-        // Sound
-        if (cube.vy > 2.2 && sound.enabled) {
-          sound.playCubeLift(180 + (r + c) * 7);
+        // Spring physics
+        cube.vel += (cube.target - cube.lift) * 0.13;
+        cube.vel *= 0.73;
+        cube.lift = Math.max(0, cube.lift + cube.vel);
+
+        // Trigger sound on strong upward movement
+        if (cube.vel > 2.5 && sound.enabled) {
+          sound.playCubeLift(160 + (cube.c + cube.r) * 6);
         }
 
-        drawCube(c, r, cube.y + bob);
+        drawCell(cube.c, cube.r, cube.lift + bob);
       }
     }
 
+    // Events
+    window.addEventListener('mousemove', e => { px = e.clientX; py = e.clientY; });
+    window.addEventListener('touchmove', e => {
+      const t0 = e.touches[0]; px = t0.clientX; py = t0.clientY;
+    }, { passive: true });
+    window.addEventListener('touchend', () => { px = -9999; py = -9999; });
+    window.addEventListener('resize', resize);
+
+    resize();
     animate();
   })();
 
