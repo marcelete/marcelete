@@ -358,9 +358,11 @@
       -webkit-text-fill-color: transparent;
       background-clip: text;
       margin-bottom: 1.5rem;
-      max-width: 100%;
-      overflow-wrap: break-word;
-      word-break: break-word;
+    }
+
+    .hero-name-line {
+      display: block;
+      white-space: nowrap;   /* each word is unbreakable — no mid-word wrap ever */
     }
 
     .hero-typewriter {
@@ -1040,7 +1042,10 @@
     <section id="hero">
       <div class="hero-inner">
         <p class="hero-eyebrow reveal">Buenos Aires · Argentina · 2025</p>
-        <h1 class="hero-name reveal reveal-d1">MARCELO<br>BELLIZIA</h1>
+        <h1 class="hero-name reveal reveal-d1">
+          <span class="hero-name-line">MARCELO</span>
+          <span class="hero-name-line">BELLIZIA</span>
+        </h1>
         <div class="hero-typewriter reveal reveal-d2">
           <span id="tw-text"></span><span class="tw-cursor">|</span>
         </div>
