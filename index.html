@@ -1952,6 +1952,25 @@
     el.addEventListener('click', () => sound.playClick());
   });
 
+  /* ============================================================
+     HERO NAME FIT — prevents "O" clipping at wide viewports
+  ============================================================ */
+  function fitHeroName() {
+    const h1 = document.querySelector('.hero-name');
+    if (!h1) return;
+    h1.style.fontSize = '';
+    const lines = h1.querySelectorAll('.hero-name-line');
+    const available = h1.parentElement.clientWidth;
+    let maxW = 0;
+    lines.forEach(l => { maxW = Math.max(maxW, l.scrollWidth); });
+    if (maxW > available) {
+      const cur = parseFloat(getComputedStyle(h1).fontSize);
+      h1.style.fontSize = Math.floor(cur * (available / maxW) * 0.97) + 'px';
+    }
+  }
+  document.fonts.ready.then(fitHeroName);
+  window.addEventListener('resize', fitHeroName);
+
   </script>
 </body>
 </html>
