@@ -349,7 +349,7 @@
 
     .hero-name {
       font-family: var(--font-display);
-      font-size: clamp(2.8rem, 8.5vw, 9rem);
+      font-size: clamp(2.8rem, 8.5vw, 8rem);
       font-weight: 900;
       line-height: 0.92;
       letter-spacing: -0.03em;
@@ -361,8 +361,8 @@
     }
 
     .hero-name-line {
-      display: block;
-      white-space: nowrap;   /* each word is unbreakable — no mid-word wrap ever */
+      display: block !important;
+      white-space: nowrap !important;
     }
 
     .hero-typewriter {
@@ -1043,8 +1043,8 @@
       <div class="hero-inner">
         <p class="hero-eyebrow reveal">Buenos Aires · Argentina · 2025</p>
         <h1 class="hero-name reveal reveal-d1">
-          <span class="hero-name-line">MARCELO</span>
-          <span class="hero-name-line">BELLIZIA</span>
+          <span class="hero-name-line" style="display:block;white-space:nowrap">MARCELO</span>
+          <span class="hero-name-line" style="display:block;white-space:nowrap">BELLIZIA</span>
         </h1>
         <div class="hero-typewriter reveal reveal-d2">
           <span id="tw-text"></span><span class="tw-cursor">|</span>
